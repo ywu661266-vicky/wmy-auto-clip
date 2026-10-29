@@ -31,6 +31,8 @@ import subprocess
 import sys
 import tempfile
 import zipfile
+import json
+import urllib.request
 
 SKILL_NAME = "wmy-auto-clip"
 REQUIRED_FIELDS = ["name", "display_name", "display_name_en", "description_zh", "description_en"]
@@ -286,15 +288,14 @@ def verify(skill_dir):
     else:
         rep.append("[OK] 无个人路径泄漏")
 
-    # 关键文件（缺任何一个都算安装不完整——尤其效果脚本和自带BGM，是"最全版"的核心）
+    # 关键文件（缺任何一个都算安装不完整——效果脚本是核心；BGM 改为首次安装时联网下载，
+    # 不在这里强制要求，否则没网/没拉到就判安装失败，反而把能用的技能回滚掉）
     MUST_HAVE = [
         "SKILL.md",
         "scripts/autoclip.py",
         "scripts/enhance.py",
         "scripts/effects.py",
         "scripts/fx_engine.py",
-        "assets/bgm_calm.mp3",
-        "assets/bgm.mp3",
         "references/动效库配置说明.md",
         "references/effects.example.json",
     ]
@@ -316,6 +317,70 @@ def verify(skill_dir):
         rep.append("[!] 残留 %d 个 .pyc（不影响使用）" % len(junk))
 
     return ok, rep
+
+
+# ───────────────── BGM 按需下载 ─────────────────
+def _url_get(url, timeout=60, as_json=False):
+    """联网取数据，自动读环境代理（学员机多半无代理，直连）。返回 bytes 或 dict。"""
+    proxy = (os.environ.get("https_proxy") or os.environ.get("HTTPS_PROXY")
+             or os.environ.get("http_proxy") or os.environ.get("HTTP_PROXY"))
+    handlers = {}
+    if proxy:
+        handlers["https"] = proxy
+        handlers["http"] = proxy
+    op = (urllib.request.build_opener(urllib.request.ProxyHandler(handlers))
+          if handlers else urllib.request.build_opener())
+    req = urllib.request.Request(url, headers={
+        "User-Agent": "wmy-autoclip-install",
+        "Accept": "application/vnd.github+json",
+    })
+    with op.open(req, timeout=timeout) as r:
+        data = r.read()
+    return json.loads(data) if as_json else data
+
+
+def download_bgm(skill_dir, files=("bgm_calm.mp3", "bgm.mp3", "bgm_synth.mp3")):
+    """首次安装后自动从 GitHub Release 拉取 BGM 到 assets/。
+
+    联网失败只返回 False 并提示，绝不阻断安装——没有 BGM 脚本照样能剪，
+    只是不会自动配乐（用户可用 --bgm 自带音乐，或手动从 Release 下载放入 assets/）。
+    """
+    assets = os.path.join(skill_dir, "assets")
+    os.makedirs(assets, exist_ok=True)
+    if all(os.path.isfile(os.path.join(assets, f)) for f in files):
+        return True
+    log("  - 正在获取背景音乐（首次安装需要联网，约 12MB）...")
+    try:
+        rel = _url_get(
+            "https://api.github.com/repos/ywu661266-vicky/wmy-auto-clip/releases/latest",
+            as_json=True)
+    except Exception as e:
+        log("  [!] 无法访问 GitHub 获取 BGM 列表（不影响剪辑）：%s" % e)
+        log("      需要配乐时，手动从 Release 下载 3 个 mp3 放进 assets/ 即可")
+        return False
+    urls = {a.get("name"): a.get("browser_download_url")
+            for a in rel.get("assets", []) if a.get("name")}
+    ok = True
+    for f in files:
+        if os.path.isfile(os.path.join(assets, f)):
+            continue
+        u = urls.get(f)
+        if not u:
+            ok = False
+            continue
+        try:
+            data = _url_get(u)
+            with open(os.path.join(assets, f), "wb") as fh:
+                fh.write(data)
+            log("  [OK] 已下载 %s" % f)
+        except Exception as e:
+            ok = False
+            log("  [!] 下载 %s 失败（不影响剪辑）：%s" % (f, e))
+    if ok:
+        log("  - 背景音乐已就位，剪辑会自动配乐")
+    else:
+        log("  [!] 部分 BGM 未下载（不影响剪辑）；想配乐可手动从 Release 放入 assets/")
+    return ok
 
 
 # ───────────────── 环境体检 ─────────────────
@@ -412,8 +477,9 @@ def probe_env(skill_dir):
     if bgm_found:
         rep.append("[OK] 自带 BGM 就位（%s）" % "、".join(bgm_found))
     else:
-        rep.append("[!] 没有自带 BGM：脚本会正常出片，但不会自动配乐。"
-                   "要配乐就把音乐路径用 --bgm 传进去")
+        rep.append("[!] 当前没有自带 BGM：脚本会正常出片，但不会自动配乐。"
+                   "首次安装会自动下载；若环境无法联网，可从 GitHub Release 手动下载"
+                   "3 个 mp3 放进 assets/，或用 --bgm 传你自己的音乐")
 
     # python 依赖
     best = None
@@ -536,6 +602,11 @@ def do_install(src_root, dest_root, do_backup=True):
             shutil.move(backup, target)
             log("  - 已回滚到原版本")
         return None
+    # 自检通过后，首次安装自动拉取 BGM（联网失败仅提示，不阻断）
+    try:
+        download_bgm(target)
+    except Exception as e:
+        log("  [!] BGM 自动下载未成功（不影响剪辑）：%s" % e)
     return target
 
 

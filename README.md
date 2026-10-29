@@ -61,10 +61,10 @@ wmy-auto-clip/
 │   ├── enhance.py           # 动效增强：运镜、花字卡、章节卡、进度条
 │   ├── effects.py           # 动效库配置加载
 │   └── fx_engine.py         # 动效渲染引擎
-├── assets/                  # 背景音乐（见下方授权说明）
-│   ├── bgm.mp3
-│   ├── bgm_calm.mp3
-│   └── bgm_synth.mp3
+├── assets/                  # 背景音乐（首次安装自动从 GitHub Release 下载，见下方说明）
+│   ├── bgm.mp3              # 安装时自动下载（Mixkit《Relaxation 05》笛+竖琴）
+│   ├── bgm_calm.mp3         # 安装时自动下载（Mixkit《Classical vibes 3》，商用免署名）
+│   └── bgm_synth.mp3        # 安装时自动下载（对外正式播出用）
 └── references/              # 给学员和讲师的配套文档
     ├── 课程SOP与学员手册.md
     ├── 动效库配置说明.md
