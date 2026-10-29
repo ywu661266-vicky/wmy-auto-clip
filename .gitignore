@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# 本地运行产物（剪辑过程会生成，不应入库）
+*.srt
+*.md.tmp
+_*/
+剪辑报告*.md
+选段报告*.md
+文字稿*.md
+
+# 系统
+.DS_Store
+Thumbs.db
