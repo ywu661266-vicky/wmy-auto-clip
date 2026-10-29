@@ -2,9 +2,9 @@
 name: wmy-auto-clip
 display_name: AI自动剪辑
 display_name_en: AI Auto Clip
-description: AI自动剪辑视频：把长视频本地自动转文字稿并剪短、把一堆零散素材自动拼成合辑（统一分辨率帧率音量、加转场/BGM/字幕），或给成片加动效增强（呼吸运镜、关键词花字卡、章节卡、进度条、背景音乐闪避）。全程本地跑，零积分、离线、不用任何付费接口。触发词：自动剪辑、AI剪辑、剪视频、剪辑视频、帮我剪、粗剪、剪长视频、剪成三分钟、剪到3分钟、剪成几分钟、压缩视频时长、去掉废话和口误、剪静音、瘦视频、加字幕、烧字幕、转文字稿、语音转文字、素材拼接、拼合辑、多段视频合成、合并视频、选段、挑片段、做成合集、做宣传片、做花絮、加BGM、配背景音乐、加动效、加特效、花字卡、竖屏成片、导出成片。
-description_zh: 本地免费的 AI 视频自动剪辑：长视频转文字稿并剪短、拼合辑、加字幕/转场/BGM，或做动效增强版（呼吸运镜+关键词花字卡+背景音乐闪避）。零积分、离线、无需付费接口。
-description_en: Free local AI video auto-editor: cut long videos to transcripts, merge clips, add subtitles/transitions/BGM, or apply motion enhancement. Zero credits, offline, no paid API.
+description: "AI自动剪辑视频：把长视频本地自动转文字稿并剪短、把一堆零散素材自动拼成合辑（统一分辨率帧率音量、加转场/BGM/字幕），或给成片加动效增强（呼吸运镜、关键词花字卡、章节卡、进度条、背景音乐闪避）。全程本地跑，零积分、离线、不用任何付费接口。触发词：自动剪辑、AI剪辑、剪视频、剪辑视频、帮我剪、粗剪、剪长视频、剪成三分钟、剪到3分钟、剪成几分钟、压缩视频时长、去掉废话和口误、剪静音、瘦视频、加字幕、烧字幕、转文字稿、语音转文字、素材拼接、拼合辑、多段视频合成、合并视频、选段、挑片段、做成合集、做宣传片、做花絮、加BGM、配背景音乐、加动效、加特效、花字卡、竖屏成片、导出成片。"
+description_zh: "本地免费的 AI 视频自动剪辑：长视频转文字稿并剪短、拼合辑、加字幕/转场/BGM，或做动效增强版（呼吸运镜+关键词花字卡+背景音乐闪避）。零积分、离线、无需付费接口。"
+description_en: "Free local AI video auto-editor: cut long videos to transcripts, merge clips, add subtitles/transitions/BGM, or apply motion enhancement. Zero credits, offline, no paid API."
 ---
 
 # AI 自动剪辑（一个工具，两种模式）
